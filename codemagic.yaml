@@ -14,6 +14,12 @@ workflows:
           unzip *.zip 2>/dev/null || true
           cp -r m3almi_flutter/* . 2>/dev/null || true
           cp -r m3almi/* . 2>/dev/null || true
+      - name: Upgrade Gradle and Fix Compatibility
+        script: |
+          cd android
+          sed -i '' 's/gradle-7.0.2-all.zip/gradle-7.5-all.zip/g' gradle/wrapper/gradle-wrapper.properties 2>/dev/null || true
+          sed -i 's/gradle-7.0.2-all.zip/gradle-7.5-all.zip/g' gradle/wrapper/gradle-wrapper.properties 2>/dev/null || true
+          cd ..
       - name: Get Flutter packages
         script: |
           flutter pub get
