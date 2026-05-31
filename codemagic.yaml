@@ -16,10 +16,11 @@ workflows:
           cp -r m3almi/* . 2>/dev/null || true
       - name: Upgrade Gradle and Fix Compatibility
         script: |
-          cd android
-          sed -i '' 's/gradle-7.0.2-all.zip/gradle-7.5-all.zip/g' gradle/wrapper/gradle-wrapper.properties 2>/dev/null || true
-          sed -i 's/gradle-7.0.2-all.zip/gradle-7.5-all.zip/g' gradle/wrapper/gradle-wrapper.properties 2>/dev/null || true
-          cd ..
+          echo "Searching and fixing all gradle wrappers..."
+          find . -name "gradle-wrapper.properties" -exec sed -i '' 's/gradle-[0-9.]*-all.zip/gradle-7.5-all.zip/g' {} + 2>/dev/null || true
+          find . -name "gradle-wrapper.properties" -exec sed -i 's/gradle-[0-9.]*-all.zip/gradle-7.5-all.zip/g' {} + 2>/dev/null || true
+          find . -name "build.gradle" -exec sed -i '' 's/com.android.tools.build:gradle:[0-9.]*/com.android.tools.build:gradle:7.2.0/g' {} + 2>/dev/null || true
+          find . -name "build.gradle" -exec sed -i 's/com.android.tools.build:gradle:[0-9.]*/com.android.tools.build:gradle:7.2.0/g' {} + 2>/dev/null || true
       - name: Get Flutter packages
         script: |
           flutter pub get
