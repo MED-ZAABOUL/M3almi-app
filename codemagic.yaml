@@ -31,7 +31,7 @@ workflows:
       - name: Build Flutter APK
         script: |
           echo "Trying to build Release APK..."
-          flutter build apk --release --no-sound-null-safety || { echo "Release failed, trying Debug APK..."; flutter build apk --debug --no-sound-null-safety; }
+          flutter build apk --release || { echo "Release failed due to Dart code errors, trying Debug APK..."; flutter build apk --debug; }
     artifacts:
       - build/app/outputs/flutter-apk/*.apk
       - build/app/outputs/apk/debug/*.apk
