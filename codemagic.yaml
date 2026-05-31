@@ -7,20 +7,33 @@ workflows:
       groups:
         - android-signing
       vars:
-        FVM_VERSION: "3.10.6"
+        FVM_VERSION: "stable"
     scripts:
-      - name: Unzip Project
+      - name: Unzip and Extract Project
         script: |
-          unzip *.zip 2>/dev/null || true
+          echo "Unzipping all files..."
+          unzip -o *.zip 2>/dev/null || true
           cp -r m3almi_flutter/* . 2>/dev/null || true
           cp -r m3almi/* . 2>/dev/null || true
-      - name: Set Java 11 for Older Gradle
+          
+      - name: Auto-Upgrade Android Files (AI Fix)
         script: |
-          echo "Switching to Java 11..."
-          sudo ln -sfn /usr/local/opt/openjdk@11/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk 2>/dev/null || true
+          echo "Upgrading Gradle Wrapper to 7.5..."
+          find . -name "gradle-wrapper.properties" -exec sed -i '' 's/gradle-[0-9.]*-all.zip/gradle-7.5-all.zip/g' {} + 2>/dev/null || true
+          find . -name "gradle-wrapper.properties" -exec sed -i 's/gradle-[0-9.]*-all.zip/gradle-7.5-all.zip/g' {} + 2>/dev/null || true
+          
+          echo "Upgrading Android Build Tools Gradle to 7.2.0..."
+          find . -name "build.gradle" -exec sed -i '' 's/com.android.tools.build:gradle:[0-9.]*/com.android.tools.build:gradle:7.2.0/g' {} + 2>/dev/null || true
+          find . -name "build.gradle" -exec sed -i 's/com.android.tools.build:gradle:[0-9.]*/com.android.tools.build:gradle:7.2.0/g' {} + 2>/dev/null || true
+          
+          echo "Ensuring correct Java Version alignment..."
+          find . -name "build.gradle" -exec sed -i 's/compileSdkVersion [0-9]*/compileSdkVersion 33/g' {} + 2>/dev/null || true
+          find . -name "build.gradle" -exec sed -i 's/targetSdkVersion [0-9]*/targetSdkVersion 33/g' {} + 2>/dev/null || true
+
       - name: Get Flutter packages
         script: |
           flutter pub get
+          
       - name: Build Flutter APK
         script: |
           flutter build apk --release
