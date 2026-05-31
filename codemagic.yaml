@@ -6,7 +6,8 @@ workflows:
     environment:
       groups:
         - android-signing
-      flutter: stable
+      vars:
+        FVM_VERSION: "stable"
     scripts:
       - name: Unzip Project
         script: |
