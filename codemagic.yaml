@@ -7,25 +7,22 @@ workflows:
       groups:
         - android-signing
       vars:
-        FVM_VERSION: "stable"
+        FVM_VERSION: "3.10.6"
     scripts:
       - name: Unzip Project
         script: |
           unzip *.zip 2>/dev/null || true
           cp -r m3almi_flutter/* . 2>/dev/null || true
           cp -r m3almi/* . 2>/dev/null || true
-      - name: Upgrade Gradle and Fix Compatibility
+      - name: Set Java 11 for Older Gradle
         script: |
-          echo "Searching and fixing all gradle wrappers..."
-          find . -name "gradle-wrapper.properties" -exec sed -i '' 's/gradle-[0-9.]*-all.zip/gradle-7.5-all.zip/g' {} + 2>/dev/null || true
-          find . -name "gradle-wrapper.properties" -exec sed -i 's/gradle-[0-9.]*-all.zip/gradle-7.5-all.zip/g' {} + 2>/dev/null || true
-          find . -name "build.gradle" -exec sed -i '' 's/com.android.tools.build:gradle:[0-9.]*/com.android.tools.build:gradle:7.2.0/g' {} + 2>/dev/null || true
-          find . -name "build.gradle" -exec sed -i 's/com.android.tools.build:gradle:[0-9.]*/com.android.tools.build:gradle:7.2.0/g' {} + 2>/dev/null || true
+          echo "Switching to Java 11..."
+          sudo ln -sfn /usr/local/opt/openjdk@11/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk 2>/dev/null || true
       - name: Get Flutter packages
         script: |
           flutter pub get
       - name: Build Flutter APK
         script: |
-          flutter build apk --release
+          flutter build apk --release --no-sound-null-safety
     artifacts:
       - build/app/outputs/flutter-apk/*.apk
